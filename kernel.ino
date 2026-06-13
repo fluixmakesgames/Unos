@@ -1,0 +1,161 @@
+#define MAX_SIZE 9
+#define MAX_TASKS 8
+
+typedef struct {
+  char name[MAX_SIZE];
+  bool active;
+  void (*entry)();
+}Task;
+
+Task Tasks[MAX_TASKS];
+long Ticks = 0; // Long to prevent overflowing instantly.
+
+/*
+SpawnTask (
+  name -> names the task process with a max size of 8 characters (+1 for null term),
+  entry -> function pointer to run the task.
+)
+
+Returns ID of the task, or -1 if failed to spawn the task.
+*/
+int SpawnTask(const char* name, void (*entry)()) { 
+    for(int i = 0; i < MAX_TASKS; i++) { 
+        if(!Tasks[i].active) { 
+            Tasks[i].active = true; 
+            strncpy(Tasks[i].name, name, MAX_SIZE - 1);
+            Tasks[i].name[MAX_SIZE - 1] = '\0';
+            Tasks[i].entry = entry;
+            return i;
+        } 
+    } 
+    return -1;
+}
+
+/*
+KillTask(
+  id -> id of the specified task to kill
+)
+
+Sets the active tag of a task to false so it may stop running, and be overwritten.
+*/
+void KillTask(int id) {
+    if(id >= 0 && id < MAX_TASKS) {
+        Tasks[id].active = false;
+    }
+}
+
+/*
+TaskMonitor()
+
+Monitors every task with its ID and name.
+*/
+void TaskMonitor() {
+    Serial.println("PID | Name");
+
+    for(int i = 0; i < MAX_TASKS; i++) {
+        if(Tasks[i].active) {
+            Serial.print(i);
+            Serial.print("   | ");
+            Serial.print(Tasks[i].name);
+            Serial.println("");
+        }
+    }
+}
+
+/*
+RunTasks()
+
+Runs every active task.
+*/
+void RunTasks() {
+  for(int i = 0; i < MAX_TASKS; i++) { // Loops through every task
+    if(Tasks[i].active) {
+      Tasks[i].entry(); // Runs task
+    }
+  }
+}
+
+/*
+freeMem()
+
+Returns the bytes of free RAM
+*/
+int freeMem() {
+  char top;
+  extern char *__brkval;
+  extern char __bss_end;
+  return __brkval == 0 ? &top - &__bss_end : &top - __brkval;
+}
+
+/*
+shell()
+
+Main user shell for running commands.
+*/
+void shell() {
+  if (Serial.available() > 0) {
+    String Com = Serial.readString(); // Reads string if the user sent one.
+    int ArgIndex = Com.indexOf(' '); // Gets index of first space for later.
+
+    Com.trim(); // Trims newline from command.
+    if(Com == "uptime") {
+      Serial.println(Ticks);
+    } else if(Com == "fmem") {
+      Serial.println(freeMem());
+    } else if(Com == "taskmon") {
+      TaskMonitor();
+    } else if(Com == "help") {
+      Serial.println("help    | Lists Commands.");
+      Serial.println("uptime  | Displays uptime in ticks.");
+      Serial.println("taskmon | Runs the task monitor.");
+      Serial.println("echo    | Echos users input.");
+      Serial.println("kill    | Kills specified task.");
+      Serial.println("fmem    | Shows amount of free RAM.");
+    } else {
+      // Checks if theres no arguments to skip cutting the string and just safely error out.
+      if(ArgIndex <= -1) {
+        Serial.println("Bad Com.");
+        return;
+      }
+
+      // Cuts string from start to space
+      String LCom = Com.substring(0, ArgIndex);
+      // Cuts string from argument
+      String Arg = Com.substring(ArgIndex+1);
+
+      // Argument commands
+      if(LCom == "echo") {
+        Serial.println(Arg);
+      } else if(LCom == "kill") {
+        if(Arg.toInt() >= MAX_TASKS) {
+          Serial.println("Non-Existent Task!");
+        }
+
+        if(Arg.toInt() < 0) {
+          Serial.println("Non-Existent Task!");
+        }
+        KillTask(Arg.toInt());
+      } else Serial.println("Bad Com.");
+    }
+  } else return;
+}
+
+void setup() {
+  // Begins serial
+  Serial.begin(9600);
+  // Notifys user of serial beginning
+  Serial.println("[X] Serial began on 9600");
+  // Spawns shell and notifys user of it
+  SpawnTask("Shell",shell);
+  Serial.println("[X] Shell task spawned");
+
+  // After Kernel Setup
+  Serial.println("Unos kernel v 0.1");
+  Serial.println("(2026)");
+}
+
+void loop() {
+  // Runs all of the tasks and upticks by 1
+  RunTasks();
+  Ticks++;
+}
