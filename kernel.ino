@@ -8,7 +8,7 @@ typedef struct {
 }Task;
 
 Task Tasks[MAX_TASKS];
-long Ticks = 0; // Long to prevent overflowing instantly.
+unsigned long Ticks = 0; // Unsigned Long to prevent overflowing for ~50 days.
 
 /*
 SpawnTask (
@@ -101,7 +101,11 @@ void shell() {
 
     Com.trim(); // Trims newline from command.
     if(Com == "uptime") {
-      Serial.println(Ticks);
+      if((Ticks / 60000) < 10) Serial.print("0");
+      Serial.print(Ticks / 60000);
+      Serial.print(":");
+      if((Ticks / 1000) % 60 < 10) Serial.print("0");
+      Serial.print((Ticks / 1000) % 60);
     } else if(Com == "fmem") {
       Serial.println(freeMem());
     } else if(Com == "taskmon") {
@@ -110,7 +114,7 @@ void shell() {
       Serial.print("\a"); // Beeps if you use PuTTY
     } else if(Com == "help") {
       Serial.println("help    | Lists Commands.");
-      Serial.println("uptime  | Displays uptime in ticks.");
+      Serial.println("uptime  | Displays uptime.");
       Serial.println("taskmon | Runs the task monitor.");
       Serial.println("echo    | Echos users input.");
       Serial.println("kill    | Kills specified task.");
@@ -161,5 +165,6 @@ void setup() {
 void loop() {
   // Runs all of the tasks and upticks by 1
   RunTasks();
-  Ticks++;
+
+  Ticks = millis();
 }
