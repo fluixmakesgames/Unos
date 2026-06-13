@@ -15,6 +15,7 @@ Kernel for the Arduino Uno.
 - taskmon (prints the tasks with the TaskMonitor() function)
 - echo (prints users input)
 - kill (kills specified task)
+- sleep (hogs the CPU until the serial sends something)
 
 ## Examples
 (">>" is used to indicate the users input)
