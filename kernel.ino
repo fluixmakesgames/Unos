@@ -97,6 +97,8 @@ void shell() {
     String Com = Serial.readString(); // Reads string if the user sent one.
     int ArgIndex = Com.indexOf(' '); // Gets index of first space for later.
 
+    Serial.println(""); // Makes newline automatically for PuTTY terminals
+
     Com.trim(); // Trims newline from command.
     if(Com == "uptime") {
       Serial.println(Ticks);
@@ -104,6 +106,8 @@ void shell() {
       Serial.println(freeMem());
     } else if(Com == "taskmon") {
       TaskMonitor();
+    } else if(Com == "beep") {
+      Serial.print("\a"); // Beeps if you use PuTTY
     } else if(Com == "help") {
       Serial.println("help    | Lists Commands.");
       Serial.println("uptime  | Displays uptime in ticks.");
