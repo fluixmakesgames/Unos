@@ -4,7 +4,7 @@
 typedef struct {
   char name[MAX_SIZE];
   bool active;
-  void (*entry)();
+  void (*entry)(int);
 }Task;
 
 Task Tasks[MAX_TASKS];
@@ -18,7 +18,7 @@ SpawnTask (
 
 Returns ID of the task, or -1 if failed to spawn the task.
 */
-int SpawnTask(const char* name, void (*entry)()) { 
+int SpawnTask(const char* name, void (*entry)(int)) { 
     for(int i = 0; i < MAX_TASKS; i++) { 
         if(!Tasks[i].active) { 
             Tasks[i].active = true; 
@@ -70,7 +70,7 @@ Runs every active task.
 void RunTasks() {
   for(int i = 0; i < MAX_TASKS; i++) { // Loops through every task
     if(Tasks[i].active) {
-      Tasks[i].entry(); // Runs task
+      Tasks[i].entry(i); // Runs task
     }
   }
 }
@@ -88,11 +88,25 @@ int freeMem() {
 }
 
 /*
+Idle()
+
+Hogs the CPU until serial wakes up to have a "low power" mode.
+*/
+void Idle(int pid) {
+  while(Serial.available() == 0) {
+      // Do absolutely nothing.
+  }
+  KillTask(pid);
+  SpawnTask("Shell",shell);
+  Serial.println("Leaving idle mode.");
+}
+
+/*
 shell()
 
 Main user shell for running commands.
 */
-void shell() {
+void shell(int pid) {
   if (Serial.available() > 0) {
     String Com = Serial.readString(); // Reads string if the user sent one.
     int ArgIndex = Com.indexOf(' '); // Gets index of first space for later.
@@ -112,6 +126,9 @@ void shell() {
       TaskMonitor();
     } else if(Com == "beep") {
       Serial.print("\a"); // Beeps if you use PuTTY
+    } else if(Com == "sleep") {
+      KillTask(pid);
+      SpawnTask("Sleeper", Idle);
     } else if(Com == "help") {
       Serial.println("help    | Lists Commands.");
       Serial.println("uptime  | Displays uptime.");
