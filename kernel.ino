@@ -136,6 +136,7 @@ void shell(int pid) {
       Serial.println("echo    | Echos users input.");
       Serial.println("kill    | Kills specified task.");
       Serial.println("fmem    | Shows amount of free RAM.");
+      Serial.println("sleep   | Idles the kernel.");
     } else {
       // Checks if theres no arguments to skip cutting the string and just safely error out.
       if(ArgIndex <= -1) {
