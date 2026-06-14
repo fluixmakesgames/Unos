@@ -7,4 +7,5 @@ void Ed(int pid) {
   while(!Serial.available()) { } // Wait again..
   String content = Serial.readString();
   WriteFile(fname.c_str(), content.c_str(), content.length());
+  KillTask(pid);
 }
