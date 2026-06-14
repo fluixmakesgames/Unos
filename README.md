@@ -1,4 +1,4 @@
-# Unos (v 0.22)
+# Unos (v 0.21)
 Kernel for the Arduino Uno.
 ## Features
 ### Kernel:
