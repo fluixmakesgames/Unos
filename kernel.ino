@@ -204,6 +204,14 @@ void shell(int pid) {
       } else if(LCom == "touch") {
         CreateFile(Arg.c_str());
       } else if(LCom == "rm") {
+        if(Arg == "-rf") {
+          for(int i = 0; i < 4; i++) {
+            if(!FileExistsAtIndex(i)) continue;
+            char fname[MAX_SIZE];
+            R_GFName(i,fname);
+            DestroyFile(fname);
+          }
+        }
         DestroyFile(Arg.c_str());
       } else if(LCom == "cat") {
         if(!FileExists(Arg.c_str())) {
