@@ -116,3 +116,18 @@ bool ReadFile(char *name, char* out) {
   }
   return false;
 }
+
+bool DestoryFile(char *name) {
+  int index = GetFileNameIndex(name);
+  if(size < MAX_FILE_SIZE) return false;
+  if(!FileExists(name)) return false;
+  if(index >= 0) {
+    for(int i = 0; i < MAX_SIZE; i++) {
+      EEPROM.update(index + i, 0);
+    }
+    EEPROM.update(index + 9, -);
+
+    return true;
+  }
+  return false;
+}
