@@ -209,7 +209,7 @@ void setup() {
   Serial.println("[X] Shell task spawned");
 
   // After Kernel Setup
-  Serial.println("Unos kernel v 0.1");
+  Serial.println("Unos kernel v 0.2");
   Serial.println("(2026)");
 }
 
