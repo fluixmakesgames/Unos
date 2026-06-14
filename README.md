@@ -1,4 +1,4 @@
-# Unos (v 0.1)
+# Unos (v 0.2)
 Kernel for the Arduino Uno.
 ## Features
 ### Kernel:
@@ -7,7 +7,7 @@ Kernel for the Arduino Uno.
 - Task Killing
 - Ticks that go up each round robin
 
-### Shell:
+### Shell (v0.3):
 #### Commands
 - help (lists commands)
 - uptime (prints uptime in ticks)
@@ -16,6 +16,11 @@ Kernel for the Arduino Uno.
 - echo (prints users input)
 - kill (kills specified task)
 - sleep (hogs the CPU until the serial sends something)
+- ls (lists every file)
+- touch (creates a new file)
+- cat (reads specified files contents)
+- rm (destroys specified file)
+- rep (reads the EEPROM as integers)
 
 ## Examples
 (">>" is used to indicate the users input)
