@@ -9,7 +9,7 @@ Kernel for the Arduino Uno.
 - File System
 - User Programs* (with a big asterisk)
 
-### Shell (v0.3):
+### Shell (v0.31):
 #### Commands
 - help (lists commands)
 - uptime (prints uptime in ticks)
