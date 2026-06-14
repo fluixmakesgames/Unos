@@ -79,6 +79,34 @@ void RunTasks() {
   }
 }
 
+typedef struct Program {
+    char name[MAX_SIZE];
+    void (*entry)(int pid);
+};
+
+/*
+The program list, this is so users can add their own programs as functions.
+*/
+Program Programs[] = {
+  {"ed", Ed}
+};
+
+#define PROGRAM_COUNT (sizeof(Programs) / sizeof(Program))
+
+/*
+FindProgram()
+
+Finds a programs index based on its name.
+*/
+int FindProgram(const char* name) {
+    for(int i = 0; i < PROGRAM_COUNT; i++) {
+        if(strcmp(Programs[i].name, name) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 /*
 freeMem()
 
@@ -185,6 +213,15 @@ void shell(int pid) {
         char dat[ReadFileSize(Arg.c_str())];
         ReadFile(Arg.c_str(),dat);
         Serial.println(dat);
+      } else if(LCom == "$") {
+        int prog = FindProgram(Arg.c_str());
+
+        if(prog == -1) {
+          Serial.println("Program not found.");
+          return;
+        }
+
+        SpawnTask(Programs[prog].name, Programs[prog].entry);
       } else if(LCom == "kill") {
         if(Arg.toInt() >= MAX_TASKS) {
           Serial.println("Non-Existent Task!");
@@ -209,7 +246,7 @@ void setup() {
   Serial.println("[X] Shell task spawned");
 
   // After Kernel Setup
-  Serial.println("Unos kernel v 0.2");
+  Serial.println("Unos kernel v 0.21");
   Serial.println("(2026)");
 }
 
