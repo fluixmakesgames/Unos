@@ -1,3 +1,5 @@
+#include <EEPROM.h>
+
 #define MAX_SIZE 9
 #define MAX_TASKS 8
 
@@ -126,8 +128,20 @@ void shell(int pid) {
       Serial.println(freeMem());
     } else if(Com == "taskmon") {
       TaskMonitor();
+    } else if(Com == "rep") {
+      for(int i = 0; i < 1024; i++) {
+        Serial.print(EEPROM[i]);
+        Serial.print(",");
+      }
     } else if(Com == "beep") {
       Serial.print("\a"); // Beeps if you use PuTTY
+    } else if(Com == "ls") {
+      for(int i = 0; i < 4; i++) {
+        if(!FileExistsAtIndex(i)) continue;
+        char fname[MAX_SIZE];
+        R_GFName(i,fname);
+        Serial.println(fname);
+      }
     } else if(Com == "sleep") {
       KillTask(pid);
       SpawnTask("Sleeper", Idle);
@@ -139,6 +153,11 @@ void shell(int pid) {
       Serial.println("kill    | Kills specified task.");
       Serial.println("fmem    | Shows amount of free RAM.");
       Serial.println("sleep   | Idles the kernel.");
+      Serial.println("ls      | Lists each file.");
+      Serial.println("touch   | Creates file.");
+      Serial.println("cat     | Echos file contents.");
+      Serial.println("rm      | Destroys specified file.");
+      Serial.println("rep     | Reads EEPROM as numbers.");
     } else {
       // Checks if theres no arguments to skip cutting the string and just safely error out.
       if(ArgIndex <= -1) {
@@ -154,6 +173,18 @@ void shell(int pid) {
       // Argument commands
       if(LCom == "echo") {
         Serial.println(Arg);
+      } else if(LCom == "touch") {
+        CreateFile(Arg.c_str());
+      } else if(LCom == "rm") {
+        DestroyFile(Arg.c_str());
+      } else if(LCom == "cat") {
+        if(!FileExists(Arg.c_str())) {
+          Serial.println("Non-Existent File!");
+          return;
+        }
+        char dat[ReadFileSize(Arg.c_str())];
+        ReadFile(Arg.c_str(),dat);
+        Serial.println(dat);
       } else if(LCom == "kill") {
         if(Arg.toInt() >= MAX_TASKS) {
           Serial.println("Non-Existent Task!");
