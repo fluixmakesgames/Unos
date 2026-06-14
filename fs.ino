@@ -90,7 +90,7 @@ bool CreateFile(char *name) {
 
 bool WriteFile(char *name, char *data, uint8_t size) {
   int index = GetFileNameIndex(name);
-  if(size < MAX_FILE_SIZE) return false;
+  if(size > MAX_FILE_SIZE) return false;
   if(!FileExists(name)) return false;
   if(index >= 0) {
     for(int i = 0; i < size; i++) {
