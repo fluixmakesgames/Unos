@@ -1,6 +1,8 @@
 #define MAX_SIZE 9
 #define MAX_TASKS 8
 
+#include "fs.h"
+
 typedef struct {
   char name[MAX_SIZE];
   bool active;
