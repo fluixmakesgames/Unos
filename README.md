@@ -1,4 +1,4 @@
-# Unos (v 0.2)
+# Unos (v 0.22)
 Kernel for the Arduino Uno.
 ## Features
 ### Kernel:
@@ -6,6 +6,8 @@ Kernel for the Arduino Uno.
 - Task Spawning
 - Task Killing
 - Ticks that go up each round robin
+- File System
+- User Programs* (with a big asterisk)
 
 ### Shell (v0.3):
 #### Commands
@@ -21,6 +23,9 @@ Kernel for the Arduino Uno.
 - cat (reads specified files contents)
 - rm (destroys specified file)
 - rep (reads the EEPROM as integers)
+
+Run programs by doing $ then what program you want to run like:
+`$ ed`
 
 ## Examples
 (">>" is used to indicate the users input)
