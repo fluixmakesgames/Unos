@@ -1,4 +1,3 @@
-#include <EEPROM.h>
 void R_GFName(int findex, char* out) { 
     int index = 256 * findex;
     for(int i = 0; i < MAX_SIZE; i++) {
@@ -115,6 +114,16 @@ bool ReadFile(char *name, char* out) {
     return true;
   }
   return false;
+}
+
+int ReadFileSize(char *name) {
+  int index = GetFileNameIndex(name);
+  if(!FileExists(name)) return -1;
+  if(index >= 0) {
+    int size = R_GFSize(index);
+    return size;
+  }
+  return -1;
 }
 
 bool DestroyFile(char *name) {
